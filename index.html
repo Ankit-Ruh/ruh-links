@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ruh · Master Links</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="All Ruh apps and sheets in one place.">
+<meta name="theme-color" content="#FAF7F2">
+
+<!-- Installable app -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ruh Links">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="Ruh Links">
+<meta name="msapplication-TileColor" content="#FAF7F2">
+<meta name="msapplication-TileImage" content="icons/icon-256.png">
+
+<style>
+  /* ─────────────────────────────────────────────────────────────── */
+  html,body{margin:0;height:100%;background:#FAF7F2;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1F1A17;-webkit-font-smoothing:antialiased;overflow:hidden}
+  #frame{position:fixed;left:0;right:0;bottom:0;top:env(safe-area-inset-top,0);width:100%;height:calc(100% - env(safe-area-inset-top,0px));border:0;background:#FAF7F2}
+  .screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#FAF7F2;z-index:5;transition:opacity .5s ease;text-align:center;padding:24px}
+  .screen.gone{opacity:0;pointer-events:none}
+  .screen img{height:150px;width:auto;animation:breathe 2.4s ease-in-out infinite}
+  .screen p{margin:0;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#8C837B}
+  .screen h2{margin:0;font:500 28px/1.2 "Cormorant Garamond",Georgia,serif}
+  .screen .msg{font-size:14px;color:#4A423C;max-width:340px;line-height:1.5;letter-spacing:0;text-transform:none}
+  .bar{width:120px;height:2px;background:#ECE5DA;border-radius:2px;overflow:hidden}
+  .bar i{display:block;width:40%;height:100%;background:#B08D57;animation:slide 1.2s ease-in-out infinite}
+  @keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+  @keyframes breathe{0%,100%{opacity:1}50%{opacity:.75}}
+  .btn{height:44px;padding:0 22px;border-radius:999px;border:0;background:#6B1E2E;color:#fff;font:500 14px Inter,system-ui,sans-serif;cursor:pointer}
+
+  /* Install prompt */
+  #install{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(140%);z-index:10;background:#1F1A17;color:#fff;border-radius:18px;padding:12px 12px 12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 14px 40px rgba(0,0,0,.25);transition:transform .35s ease;max-width:calc(100% - 32px);width:max-content}
+  #install.show{transform:translateX(-50%) translateY(0)}
+  #install img{width:40px;height:40px;border-radius:10px;flex:none}
+  #install .t{font-size:13px;line-height:1.35}
+  #install .t b{display:block;font-weight:600;font-size:14px}
+  #install .go{height:36px;padding:0 16px;border-radius:999px;border:0;background:#FAF7F2;color:#1F1A17;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+  #install .x{background:none;border:0;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
+  .share{display:inline-block;vertical-align:-3px;width:15px;height:15px}
+</style>
+</head>
+<body>
+
+<iframe id="frame" title="Ruh Master Links" allow="clipboard-read; clipboard-write"></iframe>
+
+<div class="screen" id="splash">
+  <img src="icons/logo.png" alt="Ruh — wear your soul">
+  <p>Master Links</p>
+  <div class="bar"><i></i></div>
+</div>
+
+<div class="screen gone" id="offline">
+  <img src="icons/logo.png" alt="Ruh" style="height:110px;animation:none;opacity:.8">
+  <h2>You’re offline</h2>
+  <div class="msg">Connect to the internet to open your Ruh apps.</div>
+  <button class="btn" onclick="location.reload()">Try again</button>
+</div>
+
+<div class="screen gone" id="setup">
+  <h2>Almost there</h2>
+  <div class="msg">Open <b>index.html</b> and paste your Apps Script web app link (ending in <b>/exec</b>) into <b>APP_URL</b>.</div>
+</div>
+
+<div id="install">
+  <img src="icons/icon-192.png" alt="">
+  <div class="t" id="installText"><b>Install Ruh Links</b>Add it to your home screen</div>
+  <button class="go" id="installGo">Install</button>
+  <button class="x" id="installX" aria-label="Close">×</button>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PASTE YOUR MASTER LINKS WEB APP URL BELOW (it ends in /exec)
+   ═══════════════════════════════════════════════════════════════ */
+const APP_URL = 'https://script.google.com/macros/s/AKfycbwx2zxLs6qmujrZX8YeRUq3FtTWI9q3pFmxDhAxdWuKj1-wuRhkeEBI09E6OTwW3njm/exec';
+
+const $ = id => document.getElementById(id);
+const store = { get(k){ try { return localStorage.getItem(k); } catch(e) { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e) {} } };
+const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+/* Load the app */
+function hideSplash(){ $('splash').classList.add('gone'); }
+if (!/^https:\/\/script\.google\.com\/.+\/exec/.test(APP_URL)) {
+  hideSplash(); $('setup').classList.remove('gone');
+} else if (!navigator.onLine) {
+  hideSplash(); $('offline').classList.remove('gone');
+} else {
+  $('frame').addEventListener('load', () => setTimeout(hideSplash, 350));
+  $('frame').src = APP_URL;
+  setTimeout(hideSplash, 15000);
+}
+window.addEventListener('offline', () => $('offline').classList.remove('gone'));
+window.addEventListener('online', () => { if (!$('offline').classList.contains('gone')) location.reload(); });
+
+/* Offline support + install requirement */
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+/* Install prompt */
+let deferred = null;
+const dismissed = () => Number(store.get('ruhInstallDismissed') || 0) > Date.now() - 7*24*3600*1000;
+function showInstall(text){ if (standalone || dismissed()) return; if (text) $('installText').innerHTML = text; setTimeout(() => $('install').classList.add('show'), 2500); }
+function hideInstall(){ $('install').classList.remove('show'); }
+$('installX').onclick = () => { store.set('ruhInstallDismissed', String(Date.now())); hideInstall(); };
+
+// Chrome / Edge on Windows, Mac, Android
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; showInstall(); });
+$('installGo').onclick = async () => {
+  if (deferred) { deferred.prompt(); await deferred.userChoice; deferred = null; hideInstall(); }
+  else { store.set('ruhInstallDismissed', String(Date.now())); hideInstall(); }
+};
+window.addEventListener('appinstalled', hideInstall);
+
+// iPhone / iPad (Safari): no install button exists, so show the steps
+const ua = navigator.userAgent;
+const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isMacSafari = /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|Edg|Firefox/.test(ua) && !isIOS;
+const shareIcon = '<svg class="share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+if (isIOS) { $('installGo').textContent = 'Got it'; showInstall('<b>Install Ruh Links</b>Tap '+shareIcon+' Share, then “Add to Home Screen”'); }
+else if (isMacSafari) { $('installGo').textContent = 'Got it'; showInstall('<b>Install Ruh Links</b>In the menu bar: File → “Add to Dock”'); }
+</script>
+</body>
+</html>

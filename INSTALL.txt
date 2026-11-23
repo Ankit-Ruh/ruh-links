@@ -1,0 +1,40 @@
+RUH LINKS – installable app for Windows, Mac, Android and iPhone
+==================================================================
+
+STEP 1 – Update the Apps Script (5 min)
+  1. Replace Code.gs in your Master Links Apps Script project with the new Code.gs.
+  2. Deploy → Manage deployments → Edit (pencil) → Version: New version → Deploy.
+     Keep "Execute as: Me" and "Who has access: Anyone".
+  3. Copy the Web app URL (it ends in /exec).
+
+STEP 2 – Put your link into the app (1 min)
+  Open index.html in Notepad / TextEdit and replace
+      PASTE_YOUR_WEB_APP_URL_HERE
+  with the /exec link from Step 1. Save.
+
+STEP 3 – Put the app online for free with GitHub Pages (10 min, one time)
+  1. Create a free account at github.com (or sign in).
+  2. Click "+" (top right) → New repository → name it  ruh-links  → Public → Create repository.
+  3. Click "uploading an existing file" and drag in EVERYTHING from this folder
+     (index.html, manifest.webmanifest, sw.js and the whole "icons" folder) → Commit changes.
+  4. Settings → Pages → Source: "Deploy from a branch" → Branch: main, folder: / (root) → Save.
+  5. After about a minute your app is live at:
+         https://YOUR-GITHUB-USERNAME.github.io/ruh-links/
+     Share this one link with the whole team.
+
+STEP 4 – Install it on each device (tap the link first)
+  • Windows / Mac – Chrome or Edge:
+      Click "Install" in the pop-up at the bottom, or the install icon at the right of the address bar.
+      It then opens in its own window and appears in the Start menu / Launchpad / Dock.
+      Desktop icon on Windows: Edge offers "Create desktop shortcut"; in Chrome tick
+      "Create desktop shortcut" (or: Start menu → right-click Ruh Links → Pin / Send to desktop).
+  • Mac – Safari (macOS Sonoma or newer):   File → Add to Dock.
+  • Android – Chrome:   tap "Install" (or ⋮ menu → Install app / Add to Home screen).
+  • iPhone / iPad – Safari:   tap Share (square with arrow) → "Add to Home Screen" → Add.
+
+Notes
+  • The app icon and loading screen use the Ruh logo.
+  • Everything inside (logins, departments, links) is your live Master Links app –
+    nothing about how it works changes, and the GitHub page holds no data or passwords.
+  • If you redeploy Apps Script as a NEW deployment (new /exec link), update index.html on GitHub.
+    Updating the existing deployment (Step 1) keeps the same link, so nothing to change.
