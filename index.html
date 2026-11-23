@@ -49,7 +49,7 @@
 </head>
 <body>
 
-<iframe id="frame" title="Ruh Master Links" allow="clipboard-read; clipboard-write"></iframe>
+<iframe id="frame" title="Ruh Master Links" allow="clipboard-read; clipboard-write" credentialless></iframe>
 
 <div class="screen" id="splash">
   <img src="icons/logo.png" alt="Ruh — wear your soul">
@@ -93,10 +93,20 @@ if (!/^https:\/\/script\.google\.com\/.+\/exec/.test(APP_URL)) {
 } else if (!navigator.onLine) {
   hideSplash(); $('offline').classList.remove('gone');
 } else {
+  // The app is loaded WITHOUT Google cookies (like Incognito) – this avoids Google's
+  // "Sorry, unable to open the file at present" error on phones signed into several Google accounts.
+  // The person's Master Links login is remembered here and handed back to the app.
+  const token = store.get('ruhToken');
   $('frame').addEventListener('load', () => setTimeout(hideSplash, 350));
-  $('frame').src = APP_URL;
+  $('frame').src = APP_URL + (token ? '?t=' + encodeURIComponent(token) : '');
   setTimeout(hideSplash, 15000);
 }
+window.addEventListener('message', e => {
+  if (!/\.googleusercontent\.com$/.test(new URL(e.origin).hostname)) return;   // only from the Master Links app
+  if (!e.data || !('ruhToken' in e.data)) return;
+  if (e.data.ruhToken) store.set('ruhToken', String(e.data.ruhToken));
+  else { try { localStorage.removeItem('ruhToken'); } catch(err) {} }
+});
 window.addEventListener('offline', () => $('offline').classList.remove('gone'));
 window.addEventListener('online', () => { if (!$('offline').classList.contains('gone')) location.reload(); });
 
